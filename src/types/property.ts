@@ -8,11 +8,11 @@ export type Property = {
     areaSqFt: number;
     bedrooms: number;
     bathrooms: number;
-    amenities: string[];        // parsed from pipe-separated string
+    amenities: string[];        
     furnished: 'Furnished' | 'Unfurnished' | 'Semi';
     availableFrom: Date;
     listedBy: 'Builder' | 'Owner' | 'Agent';
-    tags: string[];             // parsed from pipe-separated string
+    tags: string[];             
     colorTheme: string;
     rating: number;
     isVerified: boolean;
