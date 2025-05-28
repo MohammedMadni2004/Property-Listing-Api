@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 
-function connectDatabse() {
+function connectDatabase() {
     console.log(process.env.DB_URL); 
     mongoose.connect(process.env.DB_URL || '').then(
         () => { console.log("connected succesfully") }
@@ -9,5 +9,9 @@ function connectDatabse() {
         console.log(err);
     });   
 }
-
-export default connectDatabse;
+async function disconnectDatabase() {
+    await mongoose.disconnect();
+    console.log('MongoDB disconnected.');
+    process.exit(0);
+}
+export {connectDatabase, disconnectDatabase};
