@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 
 function connectDatabase() {
-    console.log(process.env.DB_URL); 
     mongoose.connect(process.env.DB_URL || '').then(
         () => { console.log("connected succesfully") }
     ).catch(err => {
