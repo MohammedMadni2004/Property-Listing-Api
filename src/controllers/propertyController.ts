@@ -3,6 +3,7 @@ import { PropertyModel } from "../models/propertyModel";
 import propertySchema from "../schemas/propetySchema";
 import { CustomRequest } from "../types/Request";
 import { Response } from "express";
+import { ca } from "zod/v4/locales";
 
 async function createProperty(req: CustomRequest, res: Response){
     const validatedData = propertySchema.parse(req.body);
@@ -26,3 +27,15 @@ async function createProperty(req: CustomRequest, res: Response){
     }
 
 }
+
+async function getAllProperties(req: Request, res: Response) {
+    try{
+        const properties = await PropertyModel.find();
+        return res.status(200).json(properties);
+    }catch (error) {
+        console.error("Error fetching properties:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export { createProperty, getAllProperties };
