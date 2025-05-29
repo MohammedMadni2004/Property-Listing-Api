@@ -20,5 +20,10 @@ const querySchema = z.object({
     listingType: z.enum(["rent", "sale"]).optional(),
     createdBy: z.string().min(1).optional()
   });
+   
+  const putSchema = querySchema.omit({
+    id: true,
+    createdBy: true
+  });
 
-  export default querySchema;
+export { querySchema, putSchema };
