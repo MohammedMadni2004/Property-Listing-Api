@@ -1,5 +1,6 @@
 import z from "zod";
 const querySchema = z.object({
+    id: z.string().min(1).optional(),
     title: z.string().min(1).optional(),
     type: z.string().min(1).optional(),
     price: z.number().int().positive().optional(),

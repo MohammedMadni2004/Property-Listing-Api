@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export type Property = {
     id: string;
     title: string;
@@ -17,5 +19,6 @@ export type Property = {
     rating: number;
     isVerified: boolean;
     listingType: 'sale' | 'rent';
+    createdBy: Types.ObjectId; 
   };
   

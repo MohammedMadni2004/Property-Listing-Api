@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 const propertySchema = z.object({
-  _id: z.string().min(1),
   id: z.string().min(1),
   title: z.string().min(1),
   type: z.string().min(1),
@@ -19,8 +18,7 @@ const propertySchema = z.object({
   colorTheme: z.string().min(1),
   rating: z.number().int().min(0).max(5).default(0),
   isVerified: z.boolean().default(false),
-  listingType: z.enum(["rent", "sale"]),
-  createdBy: z.string().min(1)
+  listingType: z.enum(["rent", "sale"])
 });
 
 export default propertySchema;

@@ -30,7 +30,7 @@ async function createProperty(req: CustomRequest, res: Response){
 
 async function getAllProperties(req: Request, res: Response) {
     try{
-        const properties = await PropertyModel.find();
+        const properties = await PropertyModel.find().select('-_id');
         return res.status(200).json(properties);
     }catch (error) {
         console.error("Error fetching properties:", error);
@@ -60,7 +60,7 @@ async function deleteProperty(req: CustomRequest, res: Response) {
     const propertyId = req.params.id;
     const userId = req.user?._id;
     try{
-        const deletedProperty = await PropertyModel.findOneAndDelete({ _id: propertyId, createdBy: userId });
+        const deletedProperty = await PropertyModel.findOneAndDelete({ id: propertyId, createdBy: userId });
         if (!deletedProperty) {
             return res.status(404).json({ error: "Property not found or you do not own this property" });
         }
