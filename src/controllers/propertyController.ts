@@ -56,4 +56,20 @@ async function getPropertiesByQuery(req: Request, res: Response) {
     }
 }
 
-export { createProperty, getAllProperties, getPropertiesByQuery };
+async function deleteProperty(req: CustomRequest, res: Response) {
+    const propertyId = req.params.id;
+    const userId = req.user?._id;
+    try{
+        const deletedProperty = await PropertyModel.findOneAndDelete({ _id: propertyId, createdBy: userId });
+        if (!deletedProperty) {
+            return res.status(404).json({ error: "Property not found or you do not own this property" });
+        }
+        return res.status(200).json({ message: "Property deleted successfully" });
+
+    }catch (error) {
+        console.error("Error deleting property:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export { createProperty, getAllProperties, getPropertiesByQuery, deleteProperty };
