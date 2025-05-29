@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserModel } from "../models/usereModel";
+import { UserModel } from "../models/userModel";
 import { PropertyModel } from "../models/propertyModel";
 import { CustomRequest } from "../types/Request";
 
