@@ -1,4 +1,4 @@
-import { UserModel } from '../models/usereModel';
+import { UserModel } from '../models/userModel';
 import bcrypt from 'bcrypt';
 
 type CreateUserInput = { 
