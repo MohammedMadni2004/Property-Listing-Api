@@ -29,6 +29,9 @@ importers:
       mongoose:
         specifier: ^8.15.1
         version: 8.15.1
+      qs:
+        specifier: ^6.14.0
+        version: 6.14.0
       redis:
         specifier: ^5.1.1
         version: 5.1.1
