@@ -22,8 +22,8 @@ async function validateRequest(
   }
 
   try {
-    const decodedId = verifyToken(token);
-    const user = await UserModel.findOne({ _id: decodedId });
+    const decoded = verifyToken(token);
+    const user = await UserModel.findOne({ _id: decoded.userId });
 
     if (!user) {
       res.status(401).json({ error: "Unauthorized" });
@@ -33,6 +33,7 @@ async function validateRequest(
     req.user = user;
     next();
   } catch (error) {
+    console.error("Token verification failed:", error);
     res.status(401).json({ error: "Invalid token" });
   }
 }

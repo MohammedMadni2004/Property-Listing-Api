@@ -16,7 +16,11 @@ const querySchema = z.object({
     tags: z.array(z.string()).optional(),
     colorTheme: z.string().min(1).optional(),
     rating: z.number().int().min(0).max(5).optional(),
-    isVerified: z.boolean().optional(),
+    isVerified: z.preprocess((val) => {
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return val;
+    }, z.boolean()).optional(),
     listingType: z.enum(["rent", "sale"]).optional(),
     createdBy: z.string().min(1).optional()
   });

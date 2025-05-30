@@ -4,7 +4,7 @@ import { PropertyModel } from "../models/propertyModel";
 import { CustomRequest } from "../types/request";
 
 export async function addFavorite(req: CustomRequest, res: Response): Promise<void> {
-  const { propertyId } = req.body;
+  const propertyId:string  = req.body.propertyId;
   const userId = req.user?._id;
   
   if (!userId) {
@@ -13,7 +13,7 @@ export async function addFavorite(req: CustomRequest, res: Response): Promise<vo
   }
   
   try {
-    const property = await PropertyModel.findById(propertyId);
+    const property = await PropertyModel.findOne({id:propertyId});
     
     if (!property) {
       res.status(404).json({ error: "Property not found" });
@@ -34,7 +34,7 @@ export async function addFavorite(req: CustomRequest, res: Response): Promise<vo
     
     await UserModel.updateOne(
       { _id: userId },
-      { $addToSet: { favorites: propertyId } }
+      { $addToSet: { favorites: property._id } }
     );
     
     res.status(200).json({ message: "Property added to favorites" });
@@ -45,38 +45,49 @@ export async function addFavorite(req: CustomRequest, res: Response): Promise<vo
 }
 
 export async function removeFavorite(req: CustomRequest, res: Response): Promise<void> {
-  const { propertyId } = req.params;
+  const { propertyId } = req.params; // e.g. "PROP1004"
   const userId = req.user?._id;
-  
+
   if (!userId) {
     res.status(400).json({ error: "User ID is required" });
     return;
   }
-  
+
   try {
+    // Step 1: Resolve the real ObjectId from custom `id`
+    const property = await PropertyModel.findOne({ id: propertyId });
+
+    if (!property) {
+      res.status(404).json({ error: "Property not found" });
+      return;
+    }
+
     const user = await UserModel.findById(userId);
-    
+
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
     }
-    
-    if (!user.favorites.toString().includes(propertyId)) {
+
+    const propertyObjectId = property._id.toString();
+    const isInFavorites = user.favorites.some(fav => fav.toString() === propertyObjectId);
+
+    if (!isInFavorites) {
       res.status(400).json({ error: "Property not in favorites" });
       return;
-    }
-    
+    }    
     await UserModel.updateOne(
       { _id: userId },
-      { $pull: { favorites: propertyId } }
+      { $pull: { favorites: property._id } }
     );
-    
+
     res.status(200).json({ message: "Property removed from favorites" });
   } catch (error) {
     console.error("Error removing favorite:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 export async function getFavorites(req: CustomRequest, res: Response): Promise<void> {
   const userId = req.user?._id;
