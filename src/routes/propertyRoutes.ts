@@ -5,6 +5,7 @@ import {
   getAllProperties,
   getPropertiesByQuery,
   updateProperty,
+  deleteProperty,
 } from "../controllers/propertyController";
 import checkPropertyOwner from "../middleware/checkPropertyOwner";
 import checkCache from "../middleware/checkCache"; 
@@ -16,7 +17,6 @@ propertyRoutes.get("/getAllProperties", checkCache, getAllProperties);
 propertyRoutes.get("/getPropertyByQuery", checkCache, getPropertiesByQuery); 
 propertyRoutes.get(
   "/getPropertyById",
-  validateRequest,
   checkCache,
   getPropertiesByQuery
 );

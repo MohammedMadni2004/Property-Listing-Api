@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/userModel";
 import { PropertyModel } from "../models/propertyModel";
-import { CustomRequest } from "../types/Request";
+import { CustomRequest } from "../types/request";
 
 export async function addFavorite(req: CustomRequest, res: Response) {
   const { propertyId } = req.body;

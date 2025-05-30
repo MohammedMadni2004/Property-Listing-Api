@@ -1,24 +1,28 @@
 import { Types } from "mongoose";
 
+export type PropertyType = 'Apartment' | 'Villa' | 'Bungalow' | 'Studio' | 'Penthouse';
+export type FurnishingType = 'Furnished' | 'Unfurnished' | 'Semi';
+export type ListedBy = 'Builder' | 'Owner' | 'Agent';
+export type ListingType = 'sale' | 'rent';
+
 export type Property = {
-    id: string;
-    title: string;
-    type: 'Apartment' | 'Villa' | 'Bungalow' | 'Studio' | 'Penthouse';
-    price: number;
-    state: string;
-    city: string;
-    areaSqFt: number;
-    bedrooms: number;
-    bathrooms: number;
-    amenities: string[];        
-    furnished: 'Furnished' | 'Unfurnished' | 'Semi';
-    availableFrom: Date;
-    listedBy: 'Builder' | 'Owner' | 'Agent';
-    tags: string[];             
-    colorTheme: string;
-    rating: number;
-    isVerified: boolean;
-    listingType: 'sale' | 'rent';
-    createdBy: Types.ObjectId; 
-  };
-  
+  id: string;
+  title: string;
+  type: PropertyType;
+  price: number;
+  state: string;
+  city: string;
+  areaSqFt: number;
+  bedrooms: number;
+  bathrooms: number;
+  amenities: string[];        
+  furnished: FurnishingType;
+  availableFrom: Date;
+  listedBy: ListedBy;
+  tags: string[];             
+  colorTheme: string;
+  rating: number;
+  isVerified: boolean;
+  listingType: ListingType;
+  createdBy: Types.ObjectId; 
+};
