@@ -71,25 +71,31 @@ async function getPropertiesByQuery(req: Request, res: Response) {
     queryCounts[cacheKey] = (queryCounts[cacheKey] || 0) + 1;
 
     client.get(cacheKey, async (err, cachedData) => {
-      if (err) {
-        console.error("Redis get error:", err);
+      try {
+        if (err) {
+          console.error("Redis get error:", err);
+          return res.status(500).json({ error: "Internal server error" });
+        }
+
+        if (cachedData) {
+          return res.status(200).json(JSON.parse(cachedData));
+        }
+
+        const properties = await PropertyModel.find(query);
+
+        if (!properties.length) {
+          return res.status(404).json({ message: "No properties found matching the query" });
+        }
+
+        if (queryCounts[cacheKey] >= queryThreshold) {
+          client.setex(cacheKey, 3600, JSON.stringify(properties));
+        }
+
+        return res.status(200).json(properties);
+      } catch (callbackErr) {
+        console.error("Error inside Redis callback:", callbackErr);
         return res.status(500).json({ error: "Internal server error" });
       }
-
-      if (cachedData) {
-        return res.status(200).json(JSON.parse(cachedData));
-      }
-
-      const properties = await PropertyModel.find(query);
-      if (!properties.length) {
-        return res.status(404).json({ message: "No properties found matching the query" });
-      }
-
-      if (queryCounts[cacheKey] >= queryThreshold) {
-        client.setex(cacheKey, 3600, JSON.stringify(properties));
-      }
-
-      return res.status(200).json(properties);
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -99,6 +105,7 @@ async function getPropertiesByQuery(req: Request, res: Response) {
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 async function deleteProperty(req: CustomRequest, res: Response) {
   const propertyId = req.params.id;
