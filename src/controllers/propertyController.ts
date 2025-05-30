@@ -3,13 +3,13 @@ import { PropertyModel } from "../models/propertyModel";
 import propertySchema from "../schemas/propetySchema";
 import { CustomRequest } from "../types/Request";
 import { Response, Request } from "express";
-import { querySchema, putSchema } from '../schemas/querySchema';
+import { querySchema, putSchema } from "../schemas/querySchema";
 import redis from "redis";
-import { normalizeCacheKey } from "../middleware/checkCache";
+import {  invalidateCache } from "../utils/cacheUtils";
 
 const client = redis.createClient();
-const queryThreshold = 2; 
-const queryCounts: Record<string, number> = {}; 
+const queryThreshold = 2;
+const queryCounts: Record<string, number> = {};
 
 client.on("error", (err) => {
   console.error("Redis error:", err);
@@ -84,7 +84,9 @@ async function getPropertiesByQuery(req: Request, res: Response) {
         const properties = await PropertyModel.find(query);
 
         if (!properties.length) {
-          return res.status(404).json({ message: "No properties found matching the query" });
+          return res
+            .status(404)
+            .json({ message: "No properties found matching the query" });
         }
 
         if (queryCounts[cacheKey] >= queryThreshold) {
@@ -106,7 +108,6 @@ async function getPropertiesByQuery(req: Request, res: Response) {
   }
 }
 
-
 async function deleteProperty(req: CustomRequest, res: Response) {
   const propertyId = req.params.id;
   const userId = req.user?._id;
@@ -120,6 +121,10 @@ async function deleteProperty(req: CustomRequest, res: Response) {
         .status(404)
         .json({ error: "Property not found or you do not own this property" });
     }
+
+    const cacheKey = `cache:property:${propertyId}`;
+    invalidateCache(cacheKey);
+
     return res.status(200).json({ message: "Property deleted successfully" });
   } catch (error) {
     console.error("Error deleting property:", error);
@@ -142,6 +147,10 @@ async function updateProperty(req: CustomRequest, res: Response) {
         .status(404)
         .json({ error: "Property not found or you do not own this property" });
     }
+
+    const cacheKey = `cache:property:${propertyId}`;
+    invalidateCache(cacheKey);
+
     return res
       .status(200)
       .json({ message: "Property updated successfully", property });
