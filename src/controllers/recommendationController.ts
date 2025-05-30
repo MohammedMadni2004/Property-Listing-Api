@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UserModel } from "../models/userModel";
 import { PropertyModel } from "../models/propertyModel";
 import { CustomRequest } from "../types/Request";
+import { sendEmail } from "../utils/emailUtils";
 
 export async function searchRecipient(req: Request, res: Response) {
   const { recipientEmail } = req.query;
@@ -55,9 +56,15 @@ export async function recommendProperty(req: CustomRequest, res: Response) {
 
     await recipient.save();
 
+    const emailSubject = "New Property Recommendation";
+    const appUrl = process.env.APP_URL || "http://localhost:3000";
+    const propertyLink = `${appUrl}/properties?id=${property.id}`;
+    const emailText = `Hello ${recipient.name},\n\nYou have received a new property recommendation. Check it out here: ${propertyLink} \n\nBest regards,\nProperty Listing Team`;
+    await sendEmail(recipient.email, emailSubject, emailText);
+
     return res
       .status(200)
-      .json({ message: "Property recommended successfully" });
+      .json({ message: "Property recommended successfully and email sent" });
   } catch (error) {
     console.error("Error recommending property:", error);
     return res.status(500).json({ error: "Internal server error" });

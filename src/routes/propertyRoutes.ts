@@ -14,6 +14,12 @@ const propertyRoutes = express.Router();
 propertyRoutes.post("/createProperty", validateRequest, createProperty);
 propertyRoutes.get("/getAllProperties", checkCache, getAllProperties); 
 propertyRoutes.get("/getPropertyByQuery", checkCache, getPropertiesByQuery); 
+propertyRoutes.get(
+  "/getPropertyById",
+  validateRequest,
+  checkCache,
+  getPropertiesByQuery
+);
 
 propertyRoutes.delete(
   "/deleteProperty/:id",
