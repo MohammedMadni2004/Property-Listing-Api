@@ -5,8 +5,7 @@ import { CustomRequest } from "../types/Request";
 import { Response, Request } from "express";
 import { querySchema, putSchema } from "../schemas/querySchema";
 import redisClient from "../providers/redis";
-import {  invalidateCache, normalizeCacheKey } from "../utils/cacheUtils";
-
+import { invalidateCache, normalizeCacheKey } from "../utils/cacheUtils";
 
 const queryThreshold = 2;
 const queryCounts: Record<string, number> = {};
@@ -39,27 +38,21 @@ async function getAllProperties(req: Request, res: Response) {
   const cacheKey = normalizeCacheKey(req.query);
   queryCounts[cacheKey] = (queryCounts[cacheKey] || 0) + 1;
 
-  client.get(cacheKey, async (err, cachedData) => {
-    if (err) {
-      console.error("Redis get error:", err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-
+  try {
+    const cachedData = await client.get(cacheKey);
     if (cachedData) {
       return res.status(200).json(JSON.parse(cachedData));
     }
 
-    try {
-      const properties = await PropertyModel.find().select("-_id");
-      if (queryCounts[cacheKey] >= queryThreshold) {
-        client.setex(cacheKey, 3600, JSON.stringify(properties));
-      }
-      return res.status(200).json(properties);
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      return res.status(500).json({ error: "Internal server error" });
+    const properties = await PropertyModel.find().select("-_id");
+    if (queryCounts[cacheKey] >= queryThreshold) {
+      await client.setex(cacheKey, 3600, JSON.stringify(properties));
     }
-  });
+    return res.status(200).json(properties);
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 async function getPropertiesByQuery(req: Request, res: Response) {
@@ -68,35 +61,23 @@ async function getPropertiesByQuery(req: Request, res: Response) {
     const cacheKey = normalizeCacheKey(query);
     queryCounts[cacheKey] = (queryCounts[cacheKey] || 0) + 1;
 
-    client.get(cacheKey, async (err, cachedData) => {
-      try {
-        if (err) {
-          console.error("Redis get error:", err);
-          return res.status(500).json({ error: "Internal server error" });
-        }
+    const cachedData = await client.get(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
 
-        if (cachedData) {
-          return res.status(200).json(JSON.parse(cachedData));
-        }
+    const properties = await PropertyModel.find(query);
+    if (!properties.length) {
+      return res
+        .status(404)
+        .json({ message: "No properties found matching the query" });
+    }
 
-        const properties = await PropertyModel.find(query);
+    if (queryCounts[cacheKey] >= queryThreshold) {
+      await client.setex(cacheKey, 3600, JSON.stringify(properties));
+    }
 
-        if (!properties.length) {
-          return res
-            .status(404)
-            .json({ message: "No properties found matching the query" });
-        }
-
-        if (queryCounts[cacheKey] >= queryThreshold) {
-          client.setex(cacheKey, 3600, JSON.stringify(properties));
-        }
-
-        return res.status(200).json(properties);
-      } catch (callbackErr) {
-        console.error("Error inside Redis callback:", callbackErr);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-    });
+    return res.status(200).json(properties);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: "Invalid query parameters" });
