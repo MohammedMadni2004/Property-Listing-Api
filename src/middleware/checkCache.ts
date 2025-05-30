@@ -2,23 +2,19 @@ import { Request, Response, NextFunction } from "express";
 import redisClient from "../providers/redis";
 import { normalizeCacheKey } from "../utils/cacheUtils";
 
-const client = redisClient;
+const checkCache = async (req: Request, res: Response, next: NextFunction) => {
+  const cacheKey = normalizeCacheKey(req.query);
 
-const checkCache = (req: Request, res: Response, next: NextFunction) => {
-  const cacheKey = normalizeCacheKey(req.query); // Use normalized cache key
-
-  client.get(cacheKey, (err, data) => {
-    if (err) {
-      console.error("Redis get error:", err);
-      return next();
-    }
-
+  try {
+    const data = await redisClient.get(cacheKey);
     if (data) {
-      return res.status(200).json(JSON.parse(data)); // Return cached data
+      return res.status(200).json(JSON.parse(data));
     }
-
     next();
-  });
+  } catch (err) {
+    console.error("Redis get error:", err);
+    next(); 
+  }
 };
 
 export default checkCache;
