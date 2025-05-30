@@ -5,7 +5,7 @@ import { CustomRequest } from "../types/Request";
 import { Response, Request } from "express";
 import { querySchema, putSchema } from "../schemas/querySchema";
 import redis from "redis";
-import {  invalidateCache } from "../utils/cacheUtils";
+import {  invalidateCache, normalizeCacheKey } from "../utils/cacheUtils";
 
 const client = redis.createClient();
 const queryThreshold = 2;

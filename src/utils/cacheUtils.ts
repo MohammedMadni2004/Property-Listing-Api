@@ -16,4 +16,10 @@ export function invalidateCache(cacheKey: string) {
     }
   });
 }
+export const normalizeCacheKey = (query: ParsedQs ) => {
+    const sortedKeys = Object.keys(query).sort(); // Sort keys for consistent cache keys
+    const keyParts = sortedKeys.map((key) => `${key}:${query[key] || "all"}`); // Format key-value pairs
+    return `cache:${keyParts.join("|")}`; // Join parts with a delimiter
+  };
+  
 
