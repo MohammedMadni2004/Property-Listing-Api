@@ -7,13 +7,13 @@ import {
   updateProperty,
 } from "../controllers/propertyController";
 import checkPropertyOwner from "../middleware/checkPropertyOwner";
-import checkCache from "../middleware/checkCache"; // Middleware to check Redis cache
+import checkCache from "../middleware/checkCache"; 
 
 const propertyRoutes = express.Router();
 
 propertyRoutes.post("/createProperty", validateRequest, createProperty);
-propertyRoutes.get("/getAllProperties", checkCache, getAllProperties); // Corrected route and added caching middleware
-propertyRoutes.get("/getPropertyByQuery", checkCache, getPropertiesByQuery); // Added caching middleware
+propertyRoutes.get("/getAllProperties", checkCache, getAllProperties); 
+propertyRoutes.get("/getPropertyByQuery", checkCache, getPropertiesByQuery); 
 
 propertyRoutes.delete(
   "/deleteProperty/:id",

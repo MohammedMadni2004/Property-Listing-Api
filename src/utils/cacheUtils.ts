@@ -1,11 +1,7 @@
-import redis from "redis";
 import { ParsedQs } from "qs";
+import redisClient from "../providers/redis";
 
-const client = redis.createClient();
-
-client.on("error", (err) => {
-  console.error("Redis error:", err);
-});
+const client = redisClient;
 
 export function invalidateCache(cacheKey: string) {
   client.del(cacheKey, (err) => {

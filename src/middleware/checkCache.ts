@@ -1,13 +1,8 @@
-import redis from "redis";
 import { Request, Response, NextFunction } from "express";
-import { ParsedQs } from "qs";
+import redisClient from "../providers/redis";
+import { normalizeCacheKey } from "../utils/cacheUtils";
 
-const client = redis.createClient();
-
-client.on("error", (err) => {
-  console.error("Redis error:", err);
-});
-
+const client = redisClient;
 
 const checkCache = (req: Request, res: Response, next: NextFunction) => {
   const cacheKey = normalizeCacheKey(req.query); // Use normalized cache key

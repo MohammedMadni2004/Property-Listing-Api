@@ -4,16 +4,14 @@ import propertySchema from "../schemas/propetySchema";
 import { CustomRequest } from "../types/Request";
 import { Response, Request } from "express";
 import { querySchema, putSchema } from "../schemas/querySchema";
-import redis from "redis";
+import redisClient from "../providers/redis";
 import {  invalidateCache, normalizeCacheKey } from "../utils/cacheUtils";
 
-const client = redis.createClient();
+
 const queryThreshold = 2;
 const queryCounts: Record<string, number> = {};
 
-client.on("error", (err) => {
-  console.error("Redis error:", err);
-});
+const client = redisClient;
 
 async function createProperty(req: CustomRequest, res: Response) {
   const validatedData = propertySchema.parse(req.body);
