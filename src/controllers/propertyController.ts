@@ -56,7 +56,7 @@ async function getAllProperties(req: Request, res: Response): Promise<void> {
     const properties = await PropertyModel.find().select("-_id");
     
     if (queryCounts[cacheKey] >= queryThreshold) {
-      await client.setex(cacheKey, 3600, JSON.stringify(properties));
+      await client.set(cacheKey, JSON.stringify(properties), { EX: 3600 });
     }
     
     res.status(200).json(properties);
@@ -89,7 +89,7 @@ async function getPropertiesByQuery(
     }
 
     if (queryCounts[cacheKey] >= queryThreshold) {
-      await client.setex(cacheKey, 3600, JSON.stringify(properties));
+      await client.set(cacheKey,  JSON.stringify(properties), { EX: 3600 });
     }
 
     res.status(200).json(properties);
