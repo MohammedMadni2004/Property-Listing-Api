@@ -143,18 +143,18 @@ async function updateProperty(
     const propertyId = req.params.id;
     const userId = req.user?._id;
     const validatedData = putSchema.parse(req.body);
-    
+
     const property = await PropertyModel.findOneAndReplace(
       { id: propertyId, createdBy: userId },
-      { ...validatedData, createdBy: userId },
+      { ...validatedData, id: propertyId, createdBy: userId }, // include id!
       { new: true }
     );
-    
+
     if (!property) {
       res.status(404).json({ 
         error: "Property not found or you do not own this property" 
       });
-      return; 
+      return;
     }
 
     const cacheKey = `cache:property:${propertyId}`;
@@ -173,6 +173,7 @@ async function updateProperty(
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 export {
   createProperty,
