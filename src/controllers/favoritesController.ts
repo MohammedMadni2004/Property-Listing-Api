@@ -104,7 +104,10 @@ export async function getFavorites(req: CustomRequest, res: Response): Promise<v
       res.status(404).json({ error: "User not found" });
       return;
     }
-    
+    if (user.favorites.length === 0) {
+      res.status(200).json({ favorites: [] });
+      return;
+    }
     res.status(200).json({ favorites: user.favorites });
   } catch (error) {
     console.error("Error fetching favorites:", error);
