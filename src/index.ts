@@ -20,7 +20,7 @@ app.use('/recommendations', recommendationRoutes);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello World! Welcome to the Property Recommendation API');
 });
 
 app.listen(PORT, async () => {
