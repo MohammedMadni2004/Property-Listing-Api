@@ -12,7 +12,7 @@ const propertySchema = z.object({
   bathrooms: z.number().int().positive(),
   amenities: z.array(z.string()).default([]),
   furnished: z.enum(["Semi", "Fully", "Unfurnished"]),
-  availableFrom: z.date(),
+  availableFrom: z.coerce.date(),
   listedBy: z.string().min(1),
   tags: z.array(z.string()).default([]),
   colorTheme: z.string().min(1),
