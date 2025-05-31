@@ -50,7 +50,7 @@ export async function recommendProperty(req: CustomRequest, res: Response): Prom
       return;
     }
     
-    const property = await PropertyModel.findById(propertyId);
+    const property = await PropertyModel.findOne({id:propertyId});
     
     if (!property) {
       res.status(404).json({ error: "Property not found" });
