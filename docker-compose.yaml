@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    image: propertylisting
+    container_name: PropertyListingContainer
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - appnetwork
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: RedisContainer
+    ports:
+      - "6379:6379"
+    networks:
+      - appnetwork
+
+networks:
+  appnetwork:
