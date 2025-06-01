@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    image: propertylisting
+    image: madniverse/property-listing-api:latest
     container_name: PropertyListingContainer
     ports:
       - "3000:3000"
