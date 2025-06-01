@@ -76,7 +76,7 @@ export async function recommendProperty(req: CustomRequest, res: Response): Prom
     
     const emailSubject = "New Property Recommendation";
     const appUrl = process.env.APP_URL || "http://localhost:3000";
-    const propertyLink = `${appUrl}/properties?id=${property.id}`;
+    const propertyLink = `${appUrl}/getPropertyByQuery?id=${property.id}`;
     const emailText = `Hello ${recipient.name},\n\nYou have received a new property recommendation. Check it out here: ${propertyLink}\n\nBest regards,\nProperty Listing Team`;
     
     await sendEmail(recipient.email, emailSubject, emailText);
